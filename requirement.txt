@@ -4,3 +4,5 @@ sqlparse==0.5.5
 tzdata==2025.3
 django-verify-email
 Pillow==12.2.0
+gunicorn
+uvicorn
