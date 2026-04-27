@@ -1,0 +1,222 @@
+{% extends "website/base.html" %}
+{% load static %}
+{% block title %}Products — My Store{% endblock %}
+{% block content %}
+<style>
+.product-page {
+    max-width: 1180px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+.product-search {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    align-items: center;
+    flex-wrap: wrap;
+}
+.product-search input {
+    flex: 1;
+    min-width: 220px;
+    padding: 0.95rem 1.1rem;
+    border-radius: 16px;
+    border: 1px solid #d1d5db;
+    outline: none;
+    font-size: 1rem;
+}
+.product-search button {
+    border: none;
+    border-radius: 16px;
+    background: #1fc728;
+    color: white;
+    padding: 0.95rem 1.4rem;
+    font-weight: 700;
+    cursor: pointer;
+}
+.product-search button:hover {
+    background: #14971a;
+}
+.product-grid {
+    display: grid;
+    gap: 1.5rem;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+}
+.product-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    background: #e6f8f3;
+    border-radius: 24px;
+    box-shadow: 0 18px 40px rgba(0,0,0,0.08);
+    padding: 1.5rem;
+    overflow: hidden;
+}
+.product-card.out-of-order::after {
+    content: "Out of order";
+    position: absolute;
+    top: 16px;
+    right: -48px;
+    transform: rotate(25deg);
+    background: rgba(185, 28, 28, 0.95);
+    color: white;
+    padding: 8px 64px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+}
+.product-card img {
+    width: 100%;
+    height: 220px;
+    object-fit: cover;
+    border-radius: 20px;
+    margin-bottom: 1rem;
+}
+.product-card h3 {
+    margin: 0 0 0.75rem;
+    font-size: 1.25rem;
+    color: #1f2d3d;
+}
+.product-card p {
+    margin: 0 0 1rem;
+    color: #119c26;
+    font-weight: 700;
+}
+.product-card form {
+    display: grid;
+    gap: 0.75rem;
+}
+.product-card .quantity-group {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+.product-card .quantity-group input {
+    width: 90px;
+    padding: 0.85rem 0.95rem;
+    border-radius: 14px;
+    border: 1px solid #d1d5db;
+    outline: none;
+}
+.product-card button {
+    width: 100%;
+    border: none;
+    border-radius: 18px;
+    background: #1fc728;
+    color: #e6f8f3;
+    padding: 0.95rem 1rem;
+    font-weight: 700;
+    cursor: pointer;
+}
+.product-card button:hover {
+    background: #14971a;
+}
+.product-card .label {
+    display: inline-block;
+    margin-bottom: 1rem;
+    padding: 0.4rem 0.8rem;
+    border-radius: 999px;
+    font-size: 0.85rem;
+    font-weight: 700;
+}
+.product-card .label.out-of-order {
+    background: #fee2e2;
+    color: #b91c1c;
+}
+.product-card button:disabled {
+    background: #9ca3af;
+    cursor: not-allowed;
+}
+.no-results {
+    padding: 2rem;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 20px;
+    text-align: center;
+    color: #64748b;
+}
+    .dark-mode .product-page {
+        background: #051005;
+        color: #f5f5f5;
+    }
+
+    .dark-mode .product-search input {
+        background: rgba(255,255,255,0.06);
+        border-color: rgba(255,255,255,0.12);
+        color: #f5f5f5;
+    }
+
+    .dark-mode .product-search button {
+        background: #119c26;
+    }
+
+    .dark-mode .product-card {
+        background: #1a2e1a;
+        border: 1px solid rgba(255,255,255,0.12);
+        box-shadow: 0 18px 40px rgba(0,0,0,0.25);
+    }
+
+    .dark-mode .product-card h3 {
+        color: #f5f5f5;
+    }
+
+    .dark-mode .product-card p {
+        color: #b0ff9f;
+    }
+
+    .dark-mode .product-card .quantity-group input {
+        background: rgba(255,255,255,0.08);
+        border-color: rgba(255,255,255,0.14);
+        color: #f5f5f5;
+    }
+
+    .dark-mode .product-card button {
+        background: #1fc728;
+        color: white;
+    }
+
+    .dark-mode .no-results {
+        background: rgba(255,255,255,0.05);
+        border-color: rgba(255,255,255,0.1);
+        color: #d1d5db;
+    }
+</style>
+<div class="product-page">
+    <div class="product-search">
+        <form action="{% url 'products' %}" method="get">
+            <input type="text" name="q" value="{{ query }}" placeholder="Search groceries, fruits, snacks...">
+            <button type="submit">Search</button>
+        </form>
+    </div>
+    <div class="product-grid">
+        {% if products %}
+            {% for p in products %}
+                <article class="product-card{% if p.out_of_order %} out-of-order{% endif %}">
+                    <img src="{% if p.imageURL %}{{ p.imageURL }}{% else %}{% static 'images/logo.png' %}{% endif %}" alt="{{ p.name }}">
+                    <div>
+                        <h3>{{ p.name }}</h3>
+                        <p>${{ p.price|floatformat:2 }}</p>
+                        {% if p.out_of_order %}
+                            <span class="label out-of-order">Out of order</span>
+                        {% endif %}
+                    </div>
+                    <form action="{% url 'cart:add_to_cart' p.id %}" method="post">
+                        {% csrf_token %}
+                        <div class="quantity-group">
+                            <label for="quantity-{{ p.id }}">Qty</label>
+                            <input id="quantity-{{ p.id }}" type="number" name="quantity" min="1" max="100" value="1" {% if p.out_of_order %}disabled{% endif %}>
+                        </div>
+                        <button type="submit" {% if p.out_of_order %}disabled{% endif %}>
+                            {% if p.out_of_order %}Out of order{% else %}Add to cart{% endif %}
+                        </button>
+                    </form>
+                </article>
+            {% endfor %}
+        {% else %}
+            <div class="no-results">
+                <p>No products match your search.</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

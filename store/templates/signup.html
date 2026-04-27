@@ -1,0 +1,169 @@
+{% extends "website/base.html" %}
+{% load static %}
+{% block title %}Register — My Store{% endblock %}
+{% block content %}
+<style>
+.signup-page {
+    height:100vh;
+    display: flex;
+    margin: 0;
+    padding: 0;
+    font-family: sans-serif;
+    background: url({% static 'images/farm.jpg' %});
+    background-size: cover;
+    justify-content: center;
+    align-items: center;
+ }
+ .form-container {
+    max-width:350px;
+    width: 100%;
+    padding: 40px;
+    box-shadow: 0 0 10px rgb(0, 0, 0);
+    background: transparent;
+    border-radius: 30px;
+    text-align: center;
+    backdrop-filter: blur(20px);
+ }
+ .form-header {
+    text-align: center;
+    margin-bottom: 25px;
+    font-weight: bold;
+    font-size: 1rem;
+    text-transform: uppercase;
+    color: rgb(51, 231, 15);
+ }
+ .input-container {
+    position: relative;
+    margin-bottom: 20px;
+ }
+ .input-container input {
+    padding:15px 20px ;
+    width: 275px;
+    border-radius: 30px;
+    border: 0px solid rgb(163, 25, 25);
+    box-shadow: 0 0 5px black;
+    margin-bottom: 20px;
+    background: transparent;
+    font-size: 1rem;
+    outline: none;
+    color: rgb(2, 7, 3);
+ }
+ .input-container input:hover{
+    border: 2px solid rgba(37, 161, 6, 0.304);
+ }
+ input::placeholder {
+    color: rgb(0, 0, 0);
+    font-size: 1.0rem;
+ }
+ .forgot-password {
+    text-align: right;
+    margin-bottom: 20px;
+
+ }
+ .forgot-password a {
+    text-decoration: none;
+    color: rgb(5, 218, 34);
+    font-size: 14px;
+ }
+ .forgot-password a:hover {
+    text-decoration: underline;
+ }
+ .submit {
+    width: 100%;
+    padding: 15px;
+    border-radius: 20px;
+    border: 0px solid ;
+    /* box-shadow: 0 0 5px rgba(0, 0, 0, 0.804); */
+    margin-bottom: 20px;
+    font-family: sans-serif;
+    font-weight: 900;
+    background: white;
+    cursor: pointer;
+ }
+ .submit:hover {
+    box-shadow: 0 0 9px rgba(255, 255, 255, 0.662);
+ }
+ .signup {
+    text-align: center;
+    font-size: 14px;
+    cursor: pointer;
+ }
+ .signup a {
+    text-decoration: none;
+    color: rgb(0, 235, 0);
+    cursor: pointer;
+ }
+header, .site-header {
+    display: none;
+}
+.input-container > div {
+    margin-bottom: 15px;
+}
+.input-container input[type="text"],
+.input-container input[type="email"],
+.input-container input[type="password"] {
+    padding: 15px 20px;
+    width: 100%;
+    border-radius: 30px;
+    border: 0px solid rgb(163, 25, 25);
+    box-shadow: 0 0 5px black;
+    background: transparent;
+    font-size: 1rem;
+    outline: none;
+    color: rgb(2, 7, 3);
+}
+.input-container label {
+    display: none;
+}
+.input-container small {
+    color: #999;
+    font-size: 0.8rem;
+}
+.input-container ul {
+    list-style: none;
+    padding: 0;
+    margin: 5px 0 0 0;
+}
+.form-input {
+    padding: 15px 20px !important;
+    width: 100% !important;
+    border-radius: 30px !important;
+    border: 0px solid rgb(163, 25, 25) !important;
+    box-shadow: 0 0 5px black !important;
+    margin-bottom: 20px !important;
+    background: transparent !important;
+    font-size: 1rem !important;
+    outline: none !important;
+    color: rgb(2, 7, 3) !important;
+    box-sizing: border-box !important;
+}
+</style>
+<div class="signup-page">
+<div class="form-container">
+    <div class="form-header">
+        <h3>Sign Up</h3>
+    </div>
+    <form method="POST">
+        {% csrf_token %}
+        {% if form.errors or customerform.errors %}
+            <div class="form-errors">
+                {{ form.errors }}
+                {{ customerform.errors }}
+            </div>
+        {% endif %}
+        <div class="input-container">
+            <input type="text" name="username" placeholder="Username" required>
+            <input type="email" name="email" placeholder="Email Address" required>
+            <input type="password" name="password1" placeholder="Password" required>
+            <input type="password" name="password2" placeholder="Confirm Password" required>
+            <input type="text" name="name" placeholder="Name" required>
+            <input type="text" name="phone" placeholder="Phone (Optional)">
+        </div>
+        <button class="submit" type="submit">SIGN UP</button>
+    </form>
+    <div class="signup">
+         Already Have An Account<a href="{% url 'login' %}"> log In</a>
+    </div>
+</div>
+</div>
+{% endblock %}

@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Orders - Admin</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .header {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .header h1 {
+            color: #333;
+        }
+        .nav-links a {
+            padding: 10px 20px;
+            background: #667eea;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background 0.3s;
+            margin-left: 10px;
+        }
+        .nav-links a:hover {
+            background: #764ba2;
+        }
+        .filters {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .filters a {
+            display: inline-block;
+            padding: 8px 16px;
+            margin-right: 10px;
+            background: #667eea;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background 0.3s;
+            margin-bottom: 10px;
+        }
+        .filters a:hover {
+            background: #764ba2;
+        }
+        .content {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .content h2 {
+            color: #333;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        table th, table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        table th {
+            background: #f5f5f5;
+            font-weight: bold;
+            color: #333;
+        }
+        table tr:hover {
+            background: #f9f9f9;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .status-completed {
+            background: #d4edda;
+            color: #155724;
+        }
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+        .status-badge:hover {
+            transform: scale(1.05);
+        }
+        .status-badge:active {
+            transform: scale(0.95);
+        }
+        .status-loading {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+        .no-data {
+            text-align: center;
+            padding: 20px;
+            color: #999;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Manage Orders</h1>
+            <div class="nav-links">
+                <a href="{% url 'admin_dashboard' %}">Dashboard</a>
+                <a href="{% url 'home' %}">Home</a>
+            </div>
+        </div>
+
+        <div class="filters">
+            <a href="{% url 'admin_orders' %}">All Orders</a>
+            <a href="{% url 'admin_orders' %}?status=completed">Completed</a>
+            <a href="{% url 'admin_orders' %}?status=pending">Pending</a>
+        </div>
+
+        <div class="content">
+            <h2>Orders List</h2>
+            {% if orders %}
+            <form id="orderForm" style="display: none;">
+                {% csrf_token %}
+            </form>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Order ID</th>
+                        <th>Product</th>
+                        <th>Customer</th>
+                        <th>Quantity</th>
+                        <th>Price</th>
+                        <th>Address</th>
+                        <th>Date</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for order in orders %}
+                    <tr>
+                        <td>#{{ order.id }}</td>
+                        <td>{{ order.product.name }}</td>
+                        <td>{{ order.customer.name }}</td>
+                        <td>{{ order.quantity }}</td>
+                        <td>${{ order.price }}</td>
+                        <td>{{ order.address }}</td>
+                        <td>{{ order.date }}</td>
+                        <td>
+                            <span class="status-badge {% if order.status %}status-completed{% else %}status-pending{% endif %}" 
+                                  onclick="updateOrderStatus({{ order.id }}, this)"
+                                  title="Click to toggle status">
+                                {% if order.status %}✓ Completed{% else %}⏳ Pending{% endif %}
+                            </span>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <div class="no-data">
+                <p>No orders found.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <script>
+        function updateOrderStatus(orderId, element) {
+            // Get CSRF token from the form
+            const csrfToken = document.querySelector('#orderForm [name=csrfmiddlewaretoken]').value;
+            
+            // Add loading state
+            element.classList.add('status-loading');
+            
+            fetch(`/update-order-status/${orderId}/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message) {
+                    // Update the UI with the new status
+                    const isCompleted = element.textContent.includes('Completed');
+                    if (isCompleted) {
+                        element.textContent = '⏳ Pending';
+                        element.classList.remove('status-completed');
+                        element.classList.add('status-pending');
+                    } else {
+                        element.textContent = '✓ Completed';
+                        element.classList.remove('status-pending');
+                        element.classList.add('status-completed');
+                    }
+                    element.classList.remove('status-loading');
+                } else if (data.error) {
+                    alert('Error: ' + data.error);
+                    element.classList.remove('status-loading');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Failed to update order status');
+                element.classList.remove('status-loading');
+            });
+        }
+    </script>
+</body>
+</html>

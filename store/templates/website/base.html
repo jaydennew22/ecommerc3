@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  {% load static %}
+  <meta charset="utf-8">
+  <title>{% block title %}Ecommerce{% endblock %}</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <style>
+    :root {
+        --color-background: #1e8d24;
+        --color-body-bg: #ffffff;
+        --color-text-primary: #1f2d3d;
+        --color-text-secondary: #4b5563;
+        --color-primary-brand: #e6f5e6;
+        --color-border: rgba(0, 0, 0, 0.08);
+        --color-top-bar-bg: #1e8d24;
+        --color-nav-text: #1f2d3d;
+        --color-nav-hover-bg: rgba(255, 255, 255, 0.12);
+        --color-footer-bg: #ffffff;
+        --font-family: "Open Sans", sans-serif;
+        --container-width: 1200px;
+    }
+
+    .dark-mode {
+        --color-background: #0f1f12;
+        --color-body-bg: #08120b;
+        --color-text-primary: #f2f7ec;
+        --color-text-secondary: #cbd5c2;
+        --color-primary-brand: #154d28;
+        --color-border: rgba(255, 255, 255, 0.12);
+        --color-top-bar-bg: #103019;
+        --color-nav-text: #f7f7e2;
+        --color-nav-hover-bg: rgba(255, 255, 255, 0.08);
+        --color-footer-bg: #0b170d;
+    }
+
+    /* Reset */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: var(--font-family); background: var(--color-body-bg); color: var(--color-text-primary); }
+
+
+/* Layout */
+.header-container {
+    max-width: var(--container-width);
+    margin: auto;
+    padding: 0 1rem;
+}
+
+.site-header {
+    position: sticky;
+    top: 0;
+    background: var(--color-background);
+    z-index: 1000;
+}
+
+/* Top bar */
+.top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0;
+    background: var(--color-top-bar-bg);
+    border-bottom: 1px solid var(--color-border);
+    font-size: 0.9rem;
+}
+
+.top-bar-contact,
+.top-bar-links {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: white;
+    line-height: 1.2;
+}
+
+.top-bar-phone-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.9rem;
+    height: 1.9rem;
+    border-radius: 999px;
+    background: #1fc728;
+    color: white;
+    font-size: 1rem;
+}
+
+.dark-mode-toggle {
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    background: rgba(255, 255, 255, 0.12);
+    color: var(--color-nav-text);
+    border-radius: 999px;
+    padding: 0.45rem 0.85rem;
+    cursor: pointer;
+    font-size: 0.95rem;
+    transition: all 0.25s ease;
+}
+
+.dark-mode-toggle:hover {
+    background: rgba(255, 255, 255, 0.18);
+}
+
+.dark-mode .dark-mode-toggle {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--color-text-primary);
+}
+
+.dark-mode .logo-box {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.35);
+}
+
+.dark-mode .about-section {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.08);
+}
+
+.dark-mode .about-section h2,
+.dark-mode .discounts-section h2 {
+    color: #b8ff93;
+}
+
+.dark-mode .about-text p,
+.dark-mode .feature-item p,
+.dark-mode .discount-description {
+    color: #b0b0b0;
+}
+
+.dark-mode .feature-item {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: 0 14px 34px rgba(0, 0, 0, 0.22);
+}
+
+.dark-mode .feature-item h3 {
+    color: #e7ffce;
+}
+
+.dark-mode .discount-card {
+    background: linear-gradient(135deg, #172b19, #0b1b0d);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
+}
+
+.dark-mode .discount-card::before {
+    background: rgba(255, 255, 255, 0.06);
+}
+
+.dark-mode .discount-code {
+    background: rgba(255, 255, 255, 0.08);
+    color: #f5f5f5;
+}
+
+/* Nav */
+.main-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 70px;
+}
+
+.main-nav__brand {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: var(--color-text-primary);
+}
+
+/* Toggle button */
+.main-nav__toggle {
+    display: block;
+    background: none;
+    border: 1px solid var(--color-border);
+    padding: 5px;
+    cursor: pointer;
+}
+
+.main-nav__toggle .bar {
+    display: block;
+    width: 25px;
+    height: 3px;
+    margin: 5px;
+    background: var(--color-text-primary);
+    transition: 0.3s;
+}
+
+
+.main-nav__toggle.is-active .bar:nth-child(1) {
+    transform: rotate(45deg) translate(5px, 5px);
+}
+.main-nav__toggle.is-active .bar:nth-child(2) {
+    opacity: 0;
+}
+.main-nav__toggle.is-active .bar:nth-child(3) {
+    transform: rotate(-45deg) translate(6px, -6px);
+}
+
+/* Menu */
+.main-nav__menu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    background: var(--color-background);
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+}
+
+.main-nav__menu.is-active {
+    max-height: 400px;
+}
+
+.main-nav__list {
+    list-style: none;
+}
+
+.main-nav__item {
+    border-bottom: 1px solid var(--color-border);
+}
+
+.main-nav__link {
+    display: block;
+    padding: 1rem;
+    color: var(--color-text-primary);
+    font-weight: bold;
+    position: relative;
+}
+
+/* Hover underline animation */
+.main-nav__link::after {
+    content: "";
+    position: absolute;
+    width: 0;
+    height: 2px;
+    left: 0;
+    bottom: 5px;
+    background: var(--color-primary-brand);
+    transition: 0.3s;
+}
+
+.main-nav__link:hover::after {
+    width: 100%;
+}
+
+/* Active link */
+.main-nav__link.active {
+    color: var(--color-primary-brand);
+}
+
+
+nav a {
+  text-decoration: none;
+  color: rgba(255,255,255,0.95);
+  padding-bottom: 4px;
+  transition: color .15s ease, border-color .15s ease;
+}
+nav a:hover {
+  color: #fff;
+}
+nav a.active,
+nav a[aria-current="page"] {
+  border-bottom: 2px solid rgba(255,255,255,0.95); /* thin underline */
+}
+
+
+nav a:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(31,45,61,0.12);
+}
+
+
+@media (min-width: 992px) {
+    .main-nav__toggle { display: none; }
+
+    .main-nav__menu {
+        position: static;
+        max-height: none;
+        display: flex;
+    }
+
+    .main-nav__list {
+        display: flex;
+        gap: 2rem;
+    }
+
+    .main-nav__item {
+        border: none;
+    }
+}
+
+/* Demo content */
+.content {
+    height: 200vh;
+    padding: 2rem;
+}
+
+/* increased logo size */
+.logo{
+      height:120px;       /* bigger height */
+      width:auto;         /* preserve aspect ratio */
+      object-fit:contain;
+    }
+
+    /* Footer Styles */
+    .footer {
+        background: #ffffff;
+        border-top: 1px solid rgba(0, 0, 0, 0.05);
+        box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.08);
+        margin-top: 4rem;
+    }
+
+    .footer-content {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 3rem 1.5rem;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 2rem;
+    }
+
+    .footer-section h3 {
+        color: #119c26;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        font-size: 1.1rem;
+    }
+
+    .footer-section p,
+    .footer-section a {
+        color: #4b5563;
+        line-height: 1.8;
+        font-size: 0.95rem;
+    }
+
+    .footer-section a {
+        display: block;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        margin-bottom: 0.5rem;
+    }
+
+    .footer-section a:hover {
+        color: #119c26;
+        padding-left: 0.5rem;
+    }
+
+    .footer-about p {
+        margin-bottom: 1rem;
+    }
+
+    .social-links {
+        display: flex;
+        gap: 1rem;
+        margin-top: 1rem;
+    }
+
+    .social-links a {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        background-color: rgba(17, 156, 38, 0.1);
+        border-radius: 50%;
+        color: #119c26;
+        font-size: 1.2rem;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        margin-bottom: 0;
+        padding: 0;
+    }
+
+    .social-links a:hover {
+        background-color: #119c26;
+        color: white;
+        transform: translateY(-3px);
+        padding-left: 0;
+    }
+
+    .footer-divider {
+        height: 1px;
+        background: rgba(0, 0, 0, 0.08);
+        margin: 2rem 0;
+    }
+
+    .footer-bottom {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1.5rem;
+        max-width: 1400px;
+        margin: 0 auto;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .footer-bottom p {
+        color: #4b5563;
+        font-size: 0.9rem;
+        margin: 0;
+    }
+
+    .footer-links-bottom {
+        display: flex;
+        gap: 2rem;
+        flex-wrap: wrap;
+    }
+
+    .footer-links-bottom a {
+        color: #4b5563;
+        text-decoration: none;
+        font-size: 0.9rem;
+        transition: color 0.3s ease;
+    }
+
+    .footer-links-bottom a:hover {
+        color: #119c26;
+    }
+
+    @media (max-width: 768px) {
+        .footer-content {
+            padding: 2rem 1.5rem;
+            gap: 1.5rem;
+        }
+
+        .footer-bottom {
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .footer-links-bottom {
+            justify-content: center;
+        }
+    }
+  </style>
+</head>
+
+<body>
+
+<header class="site-header">
+
+    <!-- Top Bar -->
+    <div class="top-bar header-container">
+        <div class="top-bar-contact"><span class="top-bar-phone-icon">☎</span><span>1-800-555-0199</span></div>
+        <div class="top-bar-links">
+            <button id="darkModeToggle" class="dark-mode-toggle" type="button" aria-label="Toggle dark mode">🌙</button>
+            <span>contact us</span>
+        </div>
+    </div>
+
+    <!-- Navbar -->
+    <div class="main-nav header-container">
+        <a href="#" class="main-nav__brand">GLSCorp</a>
+
+        <button 
+            class="main-nav__toggle" 
+            id="navbarToggle"
+            aria-label="Toggle navigation"
+            aria-expanded="false"
+            aria-controls="navbarMenu">
+            <span class="bar"></span>
+            <span class="bar"></span>
+            <span class="bar"></span>
+        </button>
+
+        <nav id="navbarMenu" class="main-nav__menu" aria-label="Main navigation">
+            <ul class="main-nav__list">
+                <li class="main-nav__item"><a href="{% url 'home' %}" class="main-nav__link active">Home</a></li>
+                <li class="main-nav__item"><a href="{% url 'products' %}" class="main-nav__link">Products</a></li>
+                {% if user.is_authenticated %}
+                    <li class="main-nav__item"><a href="{% url 'cart:view_cart' %}" class="main-nav__link">Cart</a></li>
+                    <li class="main-nav__item"><a href="{% url 'user_profile' %}" class="main-nav__link">My Profile</a></li>
+                    {% if user.is_staff %}
+                        <li class="main-nav__item"><a href="{% url 'admin_dashboard' %}" class="main-nav__link">Admin</a></li>
+                    {% endif %}
+                    <li class="main-nav__item"><a href="{% url 'logout' %}" class="main-nav__link">Logout</a></li>
+                {% else %}
+                    <li class="main-nav__item"><a href="{% url 'login' %}" class="main-nav__link">Login</a></li>
+                    <li class="main-nav__item"><a href="{% url 'register' %}" class="main-nav__link">Sign Up</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+    </div>
+
+</header>
+
+<main class="content">
+    {% block content %}
+    <h1>Welcome to GLSCorp</h1>
+    <p></p>
+    {% endblock %}
+</main>
+
+<footer class="footer">
+    <div class="footer-content">
+        <!-- About Section -->
+        <div class="footer-section footer-about">
+            <h3>🛒 GLSCorp</h3>
+            <p>Your trusted online grocery destination delivering fresh, quality products to your doorstep.</p>
+            <p>We partner with local farmers to bring you the freshest produce and best value.</p>
+            <div class="social-links">
+                <a href="#" title="Facebook">f</a>
+                <a href="#" title="Twitter">𝕏</a>
+                <a href="#" title="Instagram">📷</a>
+                <a href="#" title="LinkedIn">in</a>
+            </div>
+        </div>
+
+        <!-- Quick Links -->
+        <div class="footer-section">
+            <h3>Quick Links</h3>
+            <a href="{% url 'home' %}">Home</a>
+            <a href="{% url 'products' %}">Products</a>
+            <a href="{% url 'cart:view_cart' %}">Cart</a>
+            <a href="{% url 'login' %}">Sign In</a>
+        </div>
+
+        <!-- Customer Support -->
+        <div class="footer-section">
+            <h3>Support</h3>
+            <a href="#">Help & FAQ</a>
+            <a href="#">Contact Us</a>
+            <a href="#">Shipping Info</a>
+            <a href="#">Returns</a>
+            <p style="margin-top: 1rem; display: block;">📞 1-800-555-0199</p>
+        </div>
+
+        <!-- Company Info -->
+        <div class="footer-section">
+            <h3>Company</h3>
+            <a href="#">About Us</a>
+            <a href="#">Careers</a>
+            <a href="#">Blog</a>
+            <a href="#">Press</a>
+        </div>
+    </div>
+
+    <div class="footer-divider"></div>
+
+    <div class="footer-bottom">
+        <p>&copy; 2024 GLSCorp. All rights reserved.</p>
+        <div class="footer-links-bottom">
+            <a href="#">Privacy Policy</a>
+            <a href="#">Terms & Conditions</a>
+            <a href="#">Cookie Policy</a>
+        </div>
+    </div>
+</footer>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const toggle = document.getElementById('navbarToggle');
+    const menu = document.getElementById('navbarMenu');
+    const darkModeToggle = document.getElementById('darkModeToggle');
+    const root = document.documentElement;
+
+    const applyDarkMode = (enabled) => {
+        if (enabled) {
+            root.classList.add('dark-mode');
+            darkModeToggle.textContent = '☀️';
+        } else {
+            root.classList.remove('dark-mode');
+            darkModeToggle.textContent = '🌙';
+        }
+        localStorage.setItem('glscorpDarkMode', enabled ? 'on' : 'off');
+    };
+
+    const savedTheme = localStorage.getItem('glscorpDarkMode');
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    applyDarkMode(savedTheme ? savedTheme === 'on' : prefersDark);
+
+    darkModeToggle.addEventListener('click', () => {
+        applyDarkMode(!root.classList.contains('dark-mode'));
+    });
+
+    toggle.addEventListener('click', () => {
+        toggle.classList.toggle('is-active');
+        menu.classList.toggle('is-active');
+
+        const expanded = toggle.classList.contains('is-active');
+        toggle.setAttribute('aria-expanded', expanded);
+    });
+});
+</script>
+
+</body>
+</html>

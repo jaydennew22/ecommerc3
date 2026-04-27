@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Products - Admin</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .header {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .header h1 {
+            color: #333;
+        }
+        .nav-links a {
+            padding: 10px 20px;
+            background: #667eea;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background 0.3s;
+            margin-left: 10px;
+        }
+        .nav-links a:hover {
+            background: #764ba2;
+        }
+        .content {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .content h2 {
+            color: #333;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .product-card {
+            background: #f9f9f9;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            transition: all 0.3s;
+        }
+        .product-card:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transform: translateY(-5px);
+        }
+        .product-card img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+        .product-card h3 {
+            color: #333;
+            font-size: 16px;
+            margin-bottom: 8px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .product-card p {
+            color: #667eea;
+            font-weight: bold;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+        .product-card .type {
+            color: #999;
+            font-size: 12px;
+        }
+        .product-card .status-badge {
+            display: inline-block;
+            margin: 10px 0 8px;
+            padding: 5px 10px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .product-card .status-badge.available {
+            background: #def7ec;
+            color: #0f766e;
+        }
+        .product-card .status-badge.out-of-order {
+            background: #fee2e2;
+            color: #b91c1c;
+        }
+        .product-card form {
+            margin-top: 10px;
+        }
+        .product-card button {
+            width: 100%;
+            border: none;
+            border-radius: 8px;
+            padding: 10px;
+            background: #667eea;
+            color: white;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        .product-card button:hover {
+            background: #5b61d4;
+        }
+        .stat-summary {
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            color: #333;
+        }
+        .no-data {
+            text-align: center;
+            padding: 20px;
+            color: #999;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Manage Products</h1>
+            <div class="nav-links">
+                <a href="{% url 'admin_dashboard' %}">Dashboard</a>
+                <a href="{% url 'addproduct' %}">Add Product</a>
+                <a href="{% url 'home' %}">Home</a>
+            </div>
+        </div>
+
+        <div class="content">
+            <h2>Products List</h2>
+            <div class="stat-summary">
+                <strong>Total Products:</strong> {{ products|length }}
+            </div>
+            {% if products %}
+            <div class="product-grid">
+                {% for product in products %}
+                <div class="product-card">
+                    {% if product.imageURL %}
+                        <img src="{{ product.imageURL }}" alt="{{ product.name }}">
+                    {% else %}
+                        <div style="width: 100%; height: 150px; background: #e0e0e0; border-radius: 5px; display: flex; align-items: center; justify-content: center;">
+                            <span style="color: #999;">No Image</span>
+                        </div>
+                    {% endif %}
+                    <h3>{{ product.name }}</h3>
+                    <p>${{ product.price }}</p>
+                    <span class="status-badge {% if product.out_of_order %}out-of-order{% else %}available{% endif %}">
+                        {% if product.out_of_order %}Out of order{% else %}Available{% endif %}
+                    </span>
+                    <p class="type">
+                        {% if product.digital %}
+                            Digital Product
+                        {% else %}
+                            Physical Product
+                        {% endif %}
+                    </p>
+                    <form action="{% url 'toggle_product_status' product.id %}" method="post">
+                        {% csrf_token %}
+                        <button type="submit">
+                            {% if product.out_of_order %}Mark Available{% else %}Mark Out of Order{% endif %}
+                        </button>
+                    </form>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="no-data">
+                <p>No products found.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>

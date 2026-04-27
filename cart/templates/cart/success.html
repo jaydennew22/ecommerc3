@@ -1,0 +1,25 @@
+{% extends "website/base.html" %}
+{% block title %}Order placed — My Store{% endblock %}
+{% block content %}
+<h2>Thank you — your order has been placed</h2>
+<p>A confirmation will be sent if email is configured.</p>
+<p><a href="{% url 'home' %}">Return to store</a></p>
+{% endblock %}
+
+<style>
+h2 {    
+    font-size: 1.75rem;
+    margin-bottom: 1rem;
+}      
+p {
+    font-size: 1.1rem;
+    margin-bottom: 0.75rem;
+}
+a {
+    color: #1fc728;
+    font-weight: 700;
+}
+a:hover {
+    color: #14971a;
+}
+</style>

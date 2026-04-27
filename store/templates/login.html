@@ -1,0 +1,123 @@
+{% extends "website/base.html" %}
+{% load static %}
+{% block title %}Login — My Store{% endblock %}
+{% block content %}
+<style>
+.login-page {
+    height:100vh;
+    display: flex;
+    margin: 0;
+    padding: 0;
+    font-family: sans-serif;
+    background: url({% static 'images/farm.jpg' %});
+    background-size: cover;
+    justify-content: center;
+    align-items: center;
+ }
+ .form-container {
+    max-width:350px;
+    width: 100%;
+    padding: 40px;
+    box-shadow: 0 0 10px black;
+    background: transparent;
+    border-radius: 30px;
+    text-align: center;
+    backdrop-filter: blur(20px);
+ }
+ .form-header {
+    text-align: center;
+    margin-bottom: 25px;
+    font-weight: bold;
+    font-size: 1rem;
+    text-transform: uppercase;
+    color: rgb(33, 226, 59);
+ }
+ .input-container {
+    position: relative;
+    margin-bottom: 20px;
+ }
+ .input-container input {
+    padding:15px 20px ;
+    width: 275px;
+    border-radius: 30px;
+    border: 0px solid rgb(0, 0, 0);
+    box-shadow: 0 0 5px black;
+    margin-bottom: 20px;
+    background: transparent;
+    font-size: 1rem;
+    outline: none;
+    color: black;
+ }
+ .input-container input:hover{
+    border: 2px solid rgba(0, 0, 0, 0.304);
+ }
+ input::placeholder {
+    color: rgb(1, 8, 3);
+    font-size: 1.0rem;
+ }
+ .forgot-password {
+    text-align: right;
+    margin-bottom: 20px;
+
+ }
+ .forgot-password a {
+    text-decoration: none;
+    color: rgb(27, 206, 51);
+    font-size: 14px;
+ }
+ .forgot-password a:hover {
+    text-decoration: underline;
+ }
+ .submit {
+    width: 100%;
+    padding: 15px;
+    border-radius: 20px;
+    border: 0px solid ;
+    /* box-shadow: 0 0 5px rgba(0, 0, 0, 0.804); */
+    margin-bottom: 20px;
+    font-family: sans-serif;
+    font-weight: 900;
+    background: rgb(39, 185, 64);
+    cursor: pointer;
+ }
+ .submit:hover {
+    box-shadow: 0 0 9px rgba(21, 197, 88, 0.662);
+ }
+ .signup {
+    text-align: center;
+    font-size: 14px;
+    cursor: pointer;
+ }
+ .signup a {
+    text-decoration: none;
+    color: rgb(30, 197, 72);
+    cursor: pointer;
+ }
+header, .site-header {
+    display: none;
+}
+</style>
+<div class="login-page">
+<div class="form-container">
+    <div class="form-header">
+        <h3>Log In</h3>
+    </div>
+    <form method="post">
+        {% csrf_token %}
+        <div class="input-container">
+            <input type="text" name="username" placeholder="username or email" required>
+            <input type="password" name="password" placeholder="password" required>
+        </div>
+        <div class="forgot-password">
+            <a href="{% url 'forgot_password' %}">Forgot password</a>
+        </div>
+        <div class="botton">
+            <button class="submit" type="submit">LOG IN</button>
+        </div>
+        <div class="signup">
+            Don't Have An Account?<a href="{% url 'register' %}"> sign up</a>
+        </div>
+    </form>
+</div>
+</div>
+{% endblock %}
